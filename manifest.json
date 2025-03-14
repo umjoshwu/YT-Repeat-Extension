@@ -1,0 +1,19 @@
+
+{
+  "manifest_version": 3,
+  "name": "YouTube Timestamp Marker",
+  "version": "1.0",
+  "description": "Mark and return to timestamps in YouTube videos with keyboard shortcuts",
+  "permissions": ["activeTab", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "icons": {
+    "16": "assets/ext-icon.png",
+    "24": "assets/ext-icon.png",
+    "32": "assets/ext-icon.png"
+  }
+}
