@@ -1,5 +1,6 @@
 import { getActiveTabURL } from "./utils.js";
 
+// add a new bookmark to the bookmarks element.
 const addNewBookmark = (bookmarks, bookmark) => {
   const bookmarkTitleElement = document.createElement("div");
   const controlsElement = document.createElement("div");
@@ -36,7 +37,13 @@ const viewBookmarks = (currentBookmarks=[]) => {
 
   return;
 };
-
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "OPEN_POPUP") {
+    // Open the popup programmatically
+    chrome.action.openPopup();
+  }
+});
+// on play, send a message to the background script with the bookmark time. 
 const onPlay = async e => {
   const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
   const activeTab = await getActiveTabURL();
@@ -47,6 +54,7 @@ const onPlay = async e => {
   });
 };
 
+// on delete, send a message to the background script with the bookmark time.
 const onDelete = async e => {
   const activeTab = await getActiveTabURL();
   const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
@@ -71,6 +79,7 @@ const setBookmarkAttributes =  (src, eventListener, controlParentElement) => {
   controlParentElement.appendChild(controlElement);
 };
 
+// when the popup is loaded, get the active tab url and check if it is a youtube video page.
 document.addEventListener("DOMContentLoaded", async () => {
   const activeTab = await getActiveTabURL();
   const queryParameters = activeTab.url.split("?")[1];

@@ -7,15 +7,6 @@ let videoElement = null;
 let repeatEnabled = false;
 let sectionRepeatInterval = null;
 
-// Add this helper function near the top of the file
-function isMac() {
-  return navigator.platform.toLowerCase().includes('mac') || 
-         navigator.userAgent.toLowerCase().includes('mac');
-}
-
-// Add this constant for easier reference
-const MODIFIER_KEY = isMac() ? 'cmdKey' : 'ctrlKey';
-
 // Function to find the video element on YouTube
 function findVideoElement() {
   const video = document.querySelector('video.html5-main-video');
@@ -71,16 +62,6 @@ function returnToStartTimestamp() {
   } else if (videoElement) {
     showNotification("No start timestamp marked yet. Press Ctrl+E to mark a start timestamp.");
     return false;
-  }
-  return false;
-}
-
-// Function to jump to the start of the video
-function jumpToVideoStart() {
-  if (videoElement) {
-    videoElement.currentTime = 0;
-    // showNotification(`Jumped to the start of the video`);
-    return true;
   }
   return false;
 }
@@ -183,16 +164,14 @@ function formatTime(timeInSeconds) {
 
 // Show help message with all keyboard shortcuts
 function showHelpMessage() {
-  const modifierKey = isMac() ? 'CMD' : 'Ctrl';
   showNotification(
     `YouTube Timestamp Marker Shortcuts:\n` +
-    `• ${modifierKey}+E: Mark start timestamp\n` +
+    `• Ctrl+E: Mark start timestamp\n` +
     `• E: Jump to start timestamp\n` +
-    `• ${modifierKey}+R: Mark end timestamp\n` +
+    `• Ctrl+R: Mark end timestamp\n` +
     `• R: Toggle section repeat\n` +
-    `• ${modifierKey}+Left Arrow: Jump to start of video\n` +
     `• H: Show this help`,
-    6000
+    6000 // Show help for longer
   );
   return true;
 }
@@ -266,54 +245,46 @@ function showNotification(message, duration = 2000) {
 function setupKeyboardListeners() {
   document.addEventListener('keydown', (event) => {
     // Check if we're in an input field - if so, don't intercept keys
-    if (document.activeElement && 
-        (document.activeElement.tagName === 'INPUT' || 
-         document.activeElement.tagName === 'TEXTAREA' || 
-         document.activeElement.isContentEditable)) {
-      return;
+    // if (document.activeElement && 
+    //     (document.activeElement.tagName === 'INPUT' || 
+    //      document.activeElement.tagName === 'TEXTAREA' || 
+    //      document.activeElement.isContentEditable)) {
+    //   return;
+    // }
+    // H to show help message
+    if (event.key === 'h') {
+      showNotification('hi'); // doesnt show up??
+      event.preventDefault();
     }
-    
-    // Mark start timestamp
-    if (event[MODIFIER_KEY] && event.key === 'e') {
+    // Ctrl+E or Command+E (for Mac) to mark start timestamp
+    if ((event.ctrlKey || event.metaKey) && event.key === 'e') {
       if (markStartTimestamp()) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default browser behavior
       }
     }
     
     // E to return to start timestamp
-    if (!event[MODIFIER_KEY] && !event.shiftKey && !event.altKey && event.key === 'e') {
+    if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.key === 'e') {
       if (returnToStartTimestamp()) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default browser behavior
       }
     }
     
-    // Mark end timestamp
-    if (event[MODIFIER_KEY] && event.key === 'r') {
+    // Ctrl+R or Command+R (for Mac) to mark end timestamp
+    if ((event.ctrlKey || event.metaKey) && event.key === 'r') {
       if (markEndTimestamp()) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default browser behavior
       }
     }
     
     // R to toggle section repeat mode
-    if (!event[MODIFIER_KEY] && !event.shiftKey && !event.altKey && event.key === 'r') {
+    if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.key === 'r') {
       if (toggleSectionRepeat()) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default browser behavior
       }
     }
     
-    // Jump to start of video
-    if (event[MODIFIER_KEY] && event.key === 'ArrowLeft') {
-      if (jumpToVideoStart()) {
-        event.preventDefault();
-      }
-    }
-    
-    // H to show help message
-    if (!event[MODIFIER_KEY] && !event.shiftKey && !event.altKey && event.key === 'h') {
-      if (showHelpMessage()) {
-        event.preventDefault();
-      }
-    }
+
   });
 }
 
